@@ -142,7 +142,7 @@ Dual fsqrt(float x) {
   return new Dual(sqrt(x), 1/(2*sqrt(x)));
 }
 Dual fsqrt(Dual x) {
-  return new Dual(sqrt(x.real), 1/(2*sqrt(x)));
+  return new Dual(sqrt(x.real), x.epsilon/(2*sqrt(x.real)));
 }
 /*
 float fsqrt(float val) {
@@ -168,13 +168,14 @@ float fsqrt(float val) {
  */
 /*
 float fpow(float base, float exp){ 
+ if (exp==0) return 1;
  if(exp >= 1){ 
  float temp = fpow(base, exp / 2); 
  return temp * temp; } 
  else{ 
  float low = 0; 
  float high = 1.0; 
- float sqr = fsqrt(base); 
+ float sqr = fsqrt(abs(base)).real; 
  float acc = sqr; 
  float mid = high / 2; 
  while(abs(mid - exp) > EPS){ 
@@ -188,7 +189,7 @@ float fpow(float base, float exp){
  return acc; 
  } 
  } 
- */
+ 
 
 Dual fpow(Dual base, Dual exp) { 
   if (exp.real >= 1) { 
@@ -201,7 +202,7 @@ Dual fpow(Dual base, Dual exp) {
     Dual acc = sqr; 
     Dual mid = div(high,new Dual(2,1)); 
     while (abs(mid.real - exp.real) > EPS) { 
-      sqr = sqrt(sqr); 
+      sqr = fsqrt(sqr); 
       if (mid.real <= exp.real) { 
         low = mid; 
         acc = mult(acc,sqr);
@@ -214,7 +215,22 @@ Dual fpow(Dual base, Dual exp) {
     return acc;
   }
 } 
-
+*/
+Dual fpow(Dual base, Dual exp) {
+  return new Dual(pow(base.real,exp.real),exp.real*pow(base.real,exp.real-1));
+}
+float dsin(float x) {
+ if (x<-PI) return dsin(x+2*PI);
+ else if (x>PI) return dsin(x-2*PI);
+ else {
+ float s=0;
+ for (float n=0; n<=10; n++) {
+ s+=fpow(-1,n)/fact(2*int(n)+1)*fpow(x,2*n+1);
+ }
+ return s;
+ }
+ } 
+ 
 float dtf(float x) {
   return tf(x).epsilon;
 }
@@ -223,9 +239,15 @@ void setup() {
   //translate(width/2,height/2);
   strokeWeight(5);
   translate(width/2, height/2);
+  /*
   Dual a = fpow(new Dual(2,0),new Dual(2,0));
   println(a.real);
   println(a.epsilon);
+  */
+  println(dsin(PI/3));
+  float n=1;
+  ///fact(2*int(n)+1)*fpow(PI/4,2*n+1)
+  println(fpow(-1,n));
   //println(fact(2).real);
   // println(fact(2).epsilon);
   exit();

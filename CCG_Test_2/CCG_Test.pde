@@ -23,7 +23,7 @@ final int titleSize=30;
 final int ruleSize=20;
 final float buttonScale=80;
 final float buttonSpacing=50;
-
+final float arrowWidth=50;
 
 PFont title;
 PFont ruletext;
@@ -101,7 +101,17 @@ void arrow(float x, float y, float w, float h) {
   endShape();
 }
 
+void arrowTo(float x, float y, float tx, float ty) {
+  pushMatrix();
+  translate(x,y);
+  rotate(atan2(ty-y,tx-x));
+  arrow(0,0,2.0/3.0*dist(x,y,tx,ty),arrowWidth);
+  popMatrix();
+}
+
+boolean arrowStarted=false;
 void setup() {
+  
   // phone width: 1080px
   // phone height: 1794px
   size(1080, 800);
@@ -134,7 +144,6 @@ void setup() {
   guessMid = new Round(0, 0, buttonScale, buttonScale, null, null);
   guessRight = new Round(buttonScale+buttonSpacing, 0, buttonScale, buttonScale, null, null);
   guessDone = new Button(0, buttonScale/2+buttonSpacing*2, buttonScale*2, buttonScale, "DONE", title);
-  rectMode(CENTER);
 }
 
 //gtx = guess transform x
@@ -159,8 +168,25 @@ void guessTransform() {
   translate(width/3, height/2);
 }
 
+float arrowX;
+float arrowY;
+float arrowtX;
+float arrowtY;
+float n;
 void mousePressed() {
   debugPoints.add(new PVector(mouseX,mouseY));
+  if (!arrowStarted) {
+    arrowX=mouseX;
+    arrowY=mouseY;
+    arrowtX=n;
+    arrowtY=n;
+    arrowStarted=true;
+  } else {
+    arrowtX=mouseX;
+    arrowtY=mouseY;
+    arrowStarted=false;
+  }
+  
   stroke(255,0,0);
   strokeWeight(4);
   for (PVector p : debugPoints) {
@@ -182,18 +208,19 @@ void mousePressed() {
     if (auxRight.checkPressed()) {
       println("right");
       if (guess[2]=="W") guess[2]="B";
-      else guess[2]="W";
+      else guess[2]="W"; //<>//
     }
   }
-  for (Button b : allyInteract) {
-    println(b.checkPressed()); //<>//
-    if (b.checkPressed()) println("hey");
-  }
+  //for (Button b : enemyInteract) { //<>//
+  //  if (b.checkPressed()) println("hey");
+  //}
+
 }
 
 boolean firsta=true;
 boolean firstb=true;
 void draw() {
+  background(200);
   //card1.display("firstHandTransform");
   //guessPanel("guessTransform");
   
@@ -201,14 +228,16 @@ void draw() {
   stroke(0);
   bpx = width*0.2;
   bpy = height*0.3;
+  rectMode(CENTER);
   for (Card c : enemyBoard) {
     c.display("boardTransform");
     bpx+=cardWidth+cardPadding;
   }
   bpx = width*0.2;
+  rectMode(CORNER);
   if (firsta) {
     for (Card c : enemyBoard) {
-      enemyInteract.add(new Button(bpx, bpy, cardWidth, cardHeight, null, null));
+      enemyInteract.add(new Button(bpx-cardWidth/2, bpy-cardHeight/2, cardWidth, cardHeight, null, null));
       bpx+=cardWidth+cardPadding;
     }
     firsta=false;
@@ -216,22 +245,35 @@ void draw() {
 
   bpy=3*height/4;
   bpx = width*0.2;
+  rectMode(CENTER);
   for (Card c : allyBoard) {
     c.display("boardTransform");
     bpx+=cardWidth+cardPadding;
   }
   bpx = width*0.2;
+  rectMode(CORNER);
   if (firstb) {
     for (Card c : enemyBoard) {
-      allyInteract.add(new Button(bpx, bpy, cardWidth, cardHeight, null, null));
+      allyInteract.add(new Button(bpx-cardWidth/2, bpy-cardHeight/2, cardWidth, cardHeight, null, null));
       bpx+=cardWidth+cardPadding;
     }
     firstb=false;
   }
+  //for (Button b : enemyInteract) {
+  //  debugPoints.add(new PVector(b.x,b.y));
+  //  b.display();
+  //}
   stroke(255,0,0);
   strokeWeight(4);
-  for (PVector p : debugPoints) {
+  //for (PVector p : debugPoints) {
      
-    point(p.x,p.y);
-  }
+  //  point(p.x,p.y);
+  //}
+  fill(255,0,0,50);
+  if (arrowStarted) {
+  arrowTo(arrowX,arrowY,mouseX,mouseY);
+  } 
+  //else if (arrowtX!=null && arrowtY!=null) {
+  
+  //}
 }

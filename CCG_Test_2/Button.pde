@@ -41,7 +41,7 @@ class Button {
   }
 
   boolean checkPressed() {
-    if (mouseX>=x && mouseX<=x+w && mouseY<=y && mouseY>=y+h) return true;
+    if (mouseX>=x && mouseX<=x+w && mouseY>=y && mouseY<=y+h) return true;
     else return false;
   }
 }

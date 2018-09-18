@@ -19,8 +19,6 @@ PGraphics canvas;
 void setup() {
   size(900, 600);
   //fullScreen();
-  cx = width/2;
-  cy = 100;
   canvas = createGraphics(width, height);
   canvas.beginDraw();
   canvas.background(0);
@@ -28,6 +26,8 @@ void setup() {
 }
 
 void draw() {
+  cx = width*0.4;
+  cy = height*1.2;
   float num1 = -g * (2 * m1 + m2) * sin(a1);
   float num2 = -m2 * g * sin(a1-2*a2);
   float num3 = -2*sin(a1-a2)*m2;
@@ -47,9 +47,7 @@ void draw() {
   fill(0);
   
   strokeWeight(2);
-  translate(cx,cy);
-  
-  
+  //translate(cx,cy);
   float x1 = r1 * sin(a1);
   float y1 = r1 * cos(a1);
   //line(0, 0, x1, y1);
@@ -77,11 +75,15 @@ void draw() {
   canvas.beginDraw();
   canvas.colorMode(HSB);
   canvas.background(0,1);
-  canvas.translate(cx, height-cy);
+  canvas.translate(cx, cy);
   canvas.scale(1,-1);
-  canvas.strokeWeight(12);
-  canvas.stroke(frameCount % 360, 255, 255);
+  canvas.strokeWeight(3);
+  canvas.stroke(frameCount % 360, 255, 255, 50);
+  canvas.line(cx, cy, x1, y1);
+  canvas.line(x1, y1, x2, y2);
   //canvas.point(x2, y2);
+  canvas.strokeWeight(12);
+  canvas.stroke(frameCount % 360, 255, 255, 255);
   if (frameCount > 1)
   canvas.line(px2, py2, x2, y2);
   canvas.endDraw();
